@@ -1,3 +1,13 @@
+*#
+.#*
+*~
+*.orig
+*.aux
+*.log
+*.out
+*.pdf
+*.bk
+
 # Binaries for programs and plugins
 *.exe
 *.dll
