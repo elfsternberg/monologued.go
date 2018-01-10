@@ -10,20 +10,6 @@ func is_unix_conventional(c byte) bool {
 	return (c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')
 }
 
-var Rfc1288ErrorMsgs = []string {
-	"",
-	"Protocol prefix not recognized",
-	"Protocol request does not meet specifications",
-}
-
-type Rfc1288ErrorCode int
-
-const (
-	Ok          Rfc1288ErrorCode = 0
-	BadProtocol Rfc1288ErrorCode = 1
-	BadRequest  Rfc1288ErrorCode = 2
-)
-
 type Rfc1288RequestType int
 
 const (
