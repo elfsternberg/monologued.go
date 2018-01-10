@@ -1,8 +1,9 @@
 package rfc1288
 
 import(
+	"errors"
+	"strings"
 	"bytes"
-//	"fmt"
 )
 
 func is_unix_conventional(c byte) bool {
@@ -37,19 +38,23 @@ type Rfc1288Request struct {
 	Host* string
 }
 
-func parse_rfc1288_request(Buffer string) (Rfc1288ErrorCode, *Rfc1288Request) {
+func ParseRfc1288Request(Buffer string) (error, *Rfc1288Request) {
+	if pos := strings.IndexAny(Buffer, "\r\n"); pos > 0 {
+		Buffer = Buffer[:pos]
+	}
+	
 	Buflen := len(Buffer)
 
 	if Buflen < 2 {
-		return BadProtocol, nil
+		return errors.New("Protocol not recognized"), nil
 	}
 
 	if Buffer[0] != '/' || (Buffer[1] != 'W' && Buffer[1] != 'w') {
-		return BadProtocol, nil
+		return errors.New("Protocol not recognized"), nil
 	}
 
 	if len(Buffer) == 2 {
-		return Ok, &Rfc1288Request{UserList, nil, nil}
+		return nil, &Rfc1288Request{UserList, nil, nil}
 	}
 
 	index := 2
@@ -58,7 +63,7 @@ func parse_rfc1288_request(Buffer string) (Rfc1288ErrorCode, *Rfc1288Request) {
 	}
 
 	if Buflen == index {
-		return Ok, &Rfc1288Request{Type: UserList, User: nil, Host: nil}
+		return nil, &Rfc1288Request{Type: UserList, User: nil, Host: nil}
 	}
 
 	user := bytes.NewBufferString("")
@@ -71,11 +76,11 @@ func parse_rfc1288_request(Buffer string) (Rfc1288ErrorCode, *Rfc1288Request) {
 
 	if index == Buflen || (index < Buflen && Buffer[index] == ' ') {
 		ruser := user.String()
-		return Ok, &Rfc1288Request{Type: User, User: &ruser, Host: nil}
+		return nil, &Rfc1288Request{Type: User, User: &ruser, Host: nil}
 	}
 
 	if Buffer[index] != '@' {
-		return BadRequest, nil
+		return errors.New("Protocol does not meet specification"), nil
 	}
 
 	index += 1
@@ -86,5 +91,5 @@ func parse_rfc1288_request(Buffer string) (Rfc1288ErrorCode, *Rfc1288Request) {
 
 	ruser := user.String()
 	rhost := host.String()
-	return Ok, &Rfc1288Request{Type: Remote, User: &ruser, Host: &rhost}
+	return nil, &Rfc1288Request{Type: Remote, User: &ruser, Host: &rhost}
 }
