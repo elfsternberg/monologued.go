@@ -30,3 +30,6 @@ know why it has that name.
 # License
 
 Apache 2.0.  See the accompanying LICENSE file in this directory.
+
+# Warranty
+
